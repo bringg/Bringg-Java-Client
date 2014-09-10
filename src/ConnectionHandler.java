@@ -132,7 +132,7 @@ public abstract class ConnectionHandler implements ConnectionInterface{
      */
     protected String generateQueryUrlParams(){
         String baseParams = "?timestamp=" + System.currentTimeMillis() + "&access_token=" + accessToken;
-        return baseParams + "signature=" + signatureManager.sign(baseParams, false);
+        return baseParams + "&signature=" + signatureManager.sign(baseParams, false);
     }
 
     /**
