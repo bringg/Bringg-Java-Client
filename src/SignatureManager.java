@@ -1,6 +1,4 @@
 
-import org.apache.commons.codec.binary.Hex;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
@@ -48,10 +46,8 @@ public class SignatureManager {
             // sign the the input to obtain raw bytes
             byte[] rawBytes = signature.doFinal(encodedParams.getBytes("UTF-8"));
 
-            // Convert raw bytes to Hex
-            byte[] hexBytes = encodeToHex(rawBytes);
-
-            return new String(hexBytes, "UTF-8");
+            // convert the raw bytes to a hex string
+            return getHexString(rawBytes);
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -65,12 +61,27 @@ public class SignatureManager {
     }
 
     /**
-     * this implementation uses the org.apache.commons.codec.binary.Hex utility class.
      *
-     * @param input
-     * @return a byte array encoded as a hex.
+     * @param raw an array of bytes
+     * @return a hex string formatted from the byte array parameter
+     * @throws UnsupportedEncodingException
      */
-    protected byte[] encodeToHex(byte[] input){
-        return new Hex("UTF-8").encode(input);
+    protected String getHexString(byte[] raw) throws UnsupportedEncodingException {
+        byte[] hex = new byte[2 * raw.length];
+        int index = 0;
+
+        for (byte b : raw) {
+            int v = b & 0xFF;
+            hex[index++] = HEX_CHAR_TABLE[v >>> 4];
+            hex[index++] = HEX_CHAR_TABLE[v & 0xF];
+        }
+        return new String(hex, "UTF-8");
     }
+
+    private static final byte[] HEX_CHAR_TABLE = {
+            (byte)'0', (byte)'1', (byte)'2', (byte)'3',
+            (byte)'4', (byte)'5', (byte)'6', (byte)'7',
+            (byte)'8', (byte)'9', (byte)'a', (byte)'b',
+            (byte)'c', (byte)'d', (byte)'e', (byte)'f'
+    };
 }
